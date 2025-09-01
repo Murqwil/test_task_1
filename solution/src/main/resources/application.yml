@@ -1,0 +1,16 @@
+server:
+  port: 8081
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/postgres
+    user: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+    enabled: false
