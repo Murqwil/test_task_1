@@ -8,7 +8,6 @@ public record ErrorResponse(
         String path
 ) {
     public ErrorResponse(String message, String path) {
-        this.message = message;
-        this.path = path;
+        this(message, LocalDateTime.now(), path);
     }
 }

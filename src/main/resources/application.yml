@@ -12,8 +12,5 @@ spring:
     user: postgres
     password: root
     driver-class-name: org.postgresql.Driver
-    enabled: false
+    enabled: true
 
-  jpa:
-    hibernate:
-      ddl-auto: update
