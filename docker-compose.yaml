@@ -3,7 +3,7 @@ services:
     container_name: postgres_db
     image: postgres:latest
     environment:
-      - POSTGRES_DB=user-service
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
     ports:
@@ -23,7 +23,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - LIQUIBASE_COMMAND_URL=jdbc:postgresql://db:5432/user-service
+      - LIQUIBASE_COMMAND_URL=jdbc:postgresql://db:5432/postgres
       - LIQUIBASE_COMMAND_USERNAME=postgres
       - LIQUIBASE_COMMAND_PASSWORD=root
       - LIQUIBASE_COMMAND_CHANGELOG_FILE=db/changelog/db.changelog-master.yaml
@@ -32,7 +32,7 @@ services:
     command: "update"
 
   app:
-    container_name: user_app
+    container_name: wallet-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -40,13 +40,12 @@ services:
       - db
       - liquibase
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/user-service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=root
-      - JWT_SECRET=aVN8Ha5wA3zA1Zc07zH7yivXoqD9zFrVGIkEdvnV44A\=
       - SPRING_LIQUIBASE_ENABLED=false
     ports:
-      - "8005:8005"
+      - "8081:8081"
 
 volumes:
   postgres-data:
