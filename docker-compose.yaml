@@ -1,0 +1,52 @@
+services:
+  db:
+    container_name: postgres_db
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=user-service
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5440:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d user-service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  liquibase:
+    container_name: liquibase
+    image: liquibase/liquibase:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - LIQUIBASE_COMMAND_URL=jdbc:postgresql://db:5432/user-service
+      - LIQUIBASE_COMMAND_USERNAME=postgres
+      - LIQUIBASE_COMMAND_PASSWORD=root
+      - LIQUIBASE_COMMAND_CHANGELOG_FILE=db/changelog/db.changelog-master.yaml
+    volumes:
+      - ./src/main/resources/db:/liquibase/db
+    command: "update"
+
+  app:
+    container_name: user_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - liquibase
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/user-service
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SECRET=aVN8Ha5wA3zA1Zc07zH7yivXoqD9zFrVGIkEdvnV44A\=
+      - SPRING_LIQUIBASE_ENABLED=false
+    ports:
+      - "8005:8005"
+
+volumes:
+  postgres-data:
