@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.test.solution.enums.OperationType;
 import ru.test.solution.exception.InsufficientFundsException;
+import ru.test.solution.exception.WalletAlreadyExistsException;
 import ru.test.solution.exception.WalletNotFoundException;
 import ru.test.solution.model.Wallet;
 import ru.test.solution.repository.WalletRepository;
@@ -54,6 +55,10 @@ public class WalletServiceImpl implements WalletService {
 
     @Transactional
     public Wallet createWallet(UUID walletId, BigDecimal initialBalance) {
+        boolean isExist = walletRepository.existsById(walletId);
+        if (isExist) {
+          throw new WalletAlreadyExistsException("Wallet already exists");
+        }
         Wallet wallet = Wallet.builder()
                 .id(walletId)
                 .balance(initialBalance)
